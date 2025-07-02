@@ -1,0 +1,331 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f4f7f9;
+  color: #333333;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: #4a90e2;
+  color: #ffffff;
+  padding: 1rem 0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+header h1 {
+  font-weight: 700;
+}
+
+.container {
+  max-width: 1140px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- Formulario de Tareas --- */
+.task-form-container {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.task-form-container h2 {
+  margin-bottom: 1rem;
+  color: #4a90e2;
+}
+
+#task-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+#task-form input {
+  flex: 1 1 300px;
+  padding: 0.8rem;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+}
+
+#task-form button {
+  flex-basis: 150px;
+  padding: 0.8rem;
+  background-color: #4a90e2;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#task-form button:hover {
+  background-color: #357abd;
+}
+
+/* --- Lista de Tareas --- */
+.task-list-container {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+#task-list {
+  list-style: none;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eaeaea;
+  gap: 1rem;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.task-time {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #4a90e2;
+  background-color: #eaf2fc;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.task-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.task-actions button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  font-weight: 500;
+}
+
+.icon-action {
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.2rem;
+  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.icon-edit {
+  color: #555;
+}
+
+.icon-delete {
+  color: #d0021b;
+}
+
+.icon-edit:hover {
+  transform: scale(1.2);
+  color: #4a90e2;
+}
+
+.icon-delete:hover {
+  transform: scale(1.2);
+  color: #a50014;
+}
+
+/* --- Estilos de Estado --- */
+.task-item.realizada {
+  background-color: #effff4;
+}
+
+.task-item.realizada .task-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.task-item.en-espera {
+  background-color: #fff9e6;
+}
+
+.task-item.cancelada {
+  opacity: 0.6;
+}
+
+.task-actions .active-status {
+  color: #ffffff;
+}
+
+.task-actions .btn-realizada.active-status {
+  background-color: #2e8b57;
+}
+
+.task-actions .btn-espera.active-status {
+  background-color: #f5a623;
+}
+
+.task-actions .btn-cancelada.active-status {
+  background-color: #d0021b;
+}
+
+/* Estilos para los campos de edición */
+.task-item .edit-input {
+  flex-grow: 1;
+  padding: 0.5rem;
+  border: 1px solid #4a90e2;
+  border-radius: 4px;
+}
+
+.task-item .edit-time {
+  padding: 0.5rem;
+  border: 1px solid #4a90e2;
+  border-radius: 4px;
+}
+
+/* --- Estilos para el botón de Tema (Modo Oscuro) --- */
+#theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+#theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* --- REGLAS PARA EL MODO OSCURO --- */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode header {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .task-form-container,
+body.dark-mode .task-list-container {
+  background-color: #1e1e1e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode h2 {
+  color: #4a90e2;
+}
+
+body.dark-mode #task-form input {
+  background-color: #252525;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .task-item {
+  border-bottom-color: #333;
+}
+
+body.dark-mode .task-item.realizada {
+  background-color: rgba(46, 139, 87, 0.2);
+}
+
+body.dark-mode .task-item.en-espera {
+  background-color: rgba(245, 166, 35, 0.15);
+}
+
+body.dark-mode .task-time {
+  background-color: #2a3a50;
+  color: #8cb4e6;
+}
+
+body.dark-mode .icon-edit {
+  color: #999;
+}
+
+body.dark-mode .icon-edit:hover {
+  color: #4a90e2;
+}
+
+/* --- Animaciones --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* Clases para aplicar las animaciones */
+.task-item {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.task-item.exiting {
+  animation: fadeOut 0.3s ease-in forwards;
+}
