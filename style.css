@@ -58,7 +58,8 @@ header h1 {
   gap: 1rem;
 }
 
-#task-form input {
+#task-form input,
+#task-form select {
   flex: 1 1 300px;
   padding: 0.8rem;
   border: 1px solid #cccccc;
@@ -189,6 +190,10 @@ header h1 {
   background-color: #fff9e6;
 }
 
+.task-item.en-curso {
+  background-color: #e6f7ff;
+}
+
 .task-item.cancelada {
   opacity: 0.6;
 }
@@ -203,6 +208,10 @@ header h1 {
 
 .task-actions .btn-espera.active-status {
   background-color: #f5a623;
+}
+
+.task-actions .btn-curso.active-status {
+  background-color: #1c9edc;
 }
 
 .task-actions .btn-cancelada.active-status {
@@ -283,6 +292,10 @@ body.dark-mode .task-item.realizada {
 
 body.dark-mode .task-item.en-espera {
   background-color: rgba(245, 166, 35, 0.15);
+}
+
+body.dark-mode .task-item.en-curso {
+  background-color: rgba(28, 158, 220, 0.15);
 }
 
 body.dark-mode .task-time {

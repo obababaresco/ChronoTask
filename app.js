@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const taskForm = document.getElementById("task-form");
   const taskInput = document.getElementById("task-input");
   const taskTimeInput = document.getElementById("task-time");
+  const taskStatusInput = document.getElementById("task-status");
   const taskList = document.getElementById("task-list");
   const alertSound = document.getElementById("alert-sound");
   const themeToggleButton = document.getElementById("theme-toggle");
@@ -95,6 +96,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         <button class="btn-espera ${
                           task.status === "en-espera" ? "active-status" : ""
                         }" data-action="espera">En Espera</button>
+                        <button class="btn-curso ${
+                          task.status === "en-curso" ? "active-status" : ""
+                        }" data-action="curso">En Curso</button>
                         <button class="btn-cancelada ${
                           task.status === "cancelada" ? "active-status" : ""
                         }" data-action="cancelada">Cancelada</button>
@@ -111,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const text = taskInput.value.trim();
     const time = taskTimeInput.value;
+    const status = taskStatusInput.value || "en-espera";
 
     if (text === "" || time === "") {
       alert("Por favor, completa todos los campos.");
@@ -121,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       id: Date.now(),
       text,
       time,
-      status: "en-espera",
+      status,
       alerted: false,
       isEditing: false,
     };
@@ -130,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveTasks();
     renderTasks();
     taskForm.reset();
+    taskStatusInput.value = "en-espera";
   });
 
   taskList.addEventListener("click", (e) => {
@@ -142,8 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const task = tasks.find((t) => t.id === taskId);
     let shouldRender = true;
 
-    if (["realizada", "espera", "cancelada"].includes(action)) {
-      task.status = `${action === "espera" ? "en-espera" : action}`;
+    if (["realizada", "espera", "cancelada", "curso"].includes(action)) {
+      if (action === "espera") {
+        task.status = "en-espera";
+      } else if (action === "curso") {
+        task.status = "en-curso";
+      } else {
+        task.status = action;
+      }
     } else if (action === "delete") {
       if (confirm("¿Estás seguro de que quieres borrar esta tarea?")) {
         // Lógica de animación de borrado
