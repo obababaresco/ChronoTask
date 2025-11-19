@@ -54,13 +54,14 @@ header h1 {
 
 #task-form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
 }
 
 #task-form input,
 #task-form select {
-  flex: 1 1 300px;
+  width: 100%;
   padding: 0.8rem;
   border: 1px solid #cccccc;
   border-radius: 5px;
@@ -69,8 +70,8 @@ header h1 {
 }
 
 #task-form button {
-  flex-basis: 150px;
-  padding: 0.8rem;
+  width: 100%;
+  padding: 0.85rem;
   background-color: #4a90e2;
   color: #ffffff;
   border: none;
@@ -216,6 +217,69 @@ header h1 {
 
 .task-actions .btn-cancelada.active-status {
   background-color: #d0021b;
+}
+
+/* --- Ajustes Responsive --- */
+#task-time {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  body {
+    height: auto;
+  }
+
+  header {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  #theme-toggle {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .container {
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-info {
+    width: 100%;
+  }
+
+  .task-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 992px) {
+  #task-form {
+    display: grid;
+    grid-template-columns: minmax(280px, 2fr) 120px 180px 160px;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  #task-input {
+    width: 100%;
+  }
+
+  #task-time {
+    width: 100%;
+  }
+
+  #task-status {
+    width: 100%;
+  }
+
+  #task-form button {
+    width: 100%;
+  }
 }
 
 /* Estilos para los campos de edición */
