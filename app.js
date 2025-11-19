@@ -6,10 +6,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const taskList = document.getElementById("task-list");
   const alertSound = document.getElementById("alert-sound");
   const themeToggleButton = document.getElementById("theme-toggle");
+  const deleteModal = document.getElementById("delete-modal");
+  const deleteModalText = document.getElementById("delete-modal-text");
+  const deleteConfirmBtn = document.getElementById("delete-confirm-btn");
+  const deleteCancelBtn = document.getElementById("delete-cancel-btn");
+  const alertModal = document.getElementById("task-alert-modal");
+  const alertModalTitle = document.getElementById("task-alert-title");
+  const alertModalText = document.getElementById("task-alert-text");
+  const alertModalCloseBtn = document.getElementById("task-alert-close-btn");
   const body = document.body;
   const PRE_ALERT_WINDOW_MS = 60 * 1000; // 1 minuto antes del inicio
 
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  let taskPendingDeletion = null;
+  let elementPendingDeletion = null;
 
   // --- LÓGICA PARA MODO OSCURO ---
   const applyTheme = (theme) => {
@@ -64,6 +74,78 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveTasks = () => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   };
+
+  const openModal = (modal) => {
+    if (!modal) return;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  };
+
+  const closeModal = (modal) => {
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  const closeDeleteModal = () => {
+    closeModal(deleteModal);
+    taskPendingDeletion = null;
+    elementPendingDeletion = null;
+  };
+
+  const showDeleteModal = (task, listItem) => {
+    taskPendingDeletion = task;
+    elementPendingDeletion = listItem;
+    deleteModalText.textContent = `La tarea "${task.text}" se eliminará permanentemente.`;
+    openModal(deleteModal);
+  };
+
+  deleteConfirmBtn?.addEventListener("click", () => {
+    if (!taskPendingDeletion || !elementPendingDeletion) {
+      closeDeleteModal();
+      return;
+    }
+    const taskId = taskPendingDeletion.id;
+    const liElement = elementPendingDeletion;
+
+    liElement.classList.add("exiting");
+
+    setTimeout(() => {
+      tasks = tasks.filter((t) => t.id !== taskId);
+      saveTasks();
+      renderTasks();
+    }, 300);
+
+    closeDeleteModal();
+  });
+
+  deleteCancelBtn?.addEventListener("click", closeDeleteModal);
+
+  deleteModal?.addEventListener("click", (event) => {
+    if (event.target === deleteModal) {
+      closeDeleteModal();
+    }
+  });
+
+  const closeAlertModal = () => closeModal(alertModal);
+
+  const showTaskAlertModal = (task, type) => {
+    if (!task) return;
+    const isPreAlert = type === "pre";
+    alertModalTitle.textContent = isPreAlert
+      ? "Tu próxima tarea comienza pronto"
+      : "Es momento de iniciar";
+    alertModalText.textContent = `${formatTime12h(task.time)} · ${task.text}`;
+    openModal(alertModal);
+  };
+
+  alertModalCloseBtn?.addEventListener("click", closeAlertModal);
+
+  alertModal?.addEventListener("click", (event) => {
+    if (event.target === alertModal) {
+      closeAlertModal();
+    }
+  });
 
   const formatTime12h = (time24) => {
     if (!time24) return "";
@@ -179,19 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
         task.status = action;
       }
     } else if (action === "delete") {
-      if (confirm("¿Estás seguro de que quieres borrar esta tarea?")) {
-        // Lógica de animación de borrado
-        li.classList.add("exiting");
-
-        // Esperar a que la animación termine para borrar el dato y renderizar
-        setTimeout(() => {
-          tasks = tasks.filter((t) => t.id !== taskId);
-          saveTasks();
-          renderTasks();
-        }, 300); // Debe coincidir con la duración de la animación fadeOut
-
-        shouldRender = false; // Evitamos el renderizado inmediato
-      }
+      showDeleteModal(task, li);
+      shouldRender = false; // Evitamos el renderizado inmediato
     } else if (action === "edit") {
       tasks.forEach((t) => (t.isEditing = t.id === taskId));
     } else if (action === "save-edit") {
@@ -229,12 +300,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (diffMs <= PRE_ALERT_WINDOW_MS && diffMs > 0 && !task.preAlerted) {
         playAlertSound();
+        showTaskAlertModal(task, "pre");
         task.preAlerted = true;
         shouldSave = true;
       }
 
       if (diffMs <= 0 && !task.alerted) {
         playAlertSound();
+        showTaskAlertModal(task, "start");
         task.alerted = true;
         shouldSave = true;
       }

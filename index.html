@@ -49,6 +49,37 @@
 
     <audio id="alert-sound" src="sounds/alert.wav" preload="auto"></audio>
 
+    <!-- Modal de confirmación de eliminación -->
+    <div id="delete-modal" class="modal-overlay" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-labelledby="delete-modal-title">
+        <h3 id="delete-modal-title">¿Eliminar tarea?</h3>
+        <p id="delete-modal-text">
+          Esta acción no se puede deshacer.
+        </p>
+        <div class="modal-actions">
+          <button id="delete-cancel-btn" class="modal-btn secondary">
+            Cancelar
+          </button>
+          <button id="delete-confirm-btn" class="modal-btn danger">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de alerta de tarea -->
+    <div id="task-alert-modal" class="modal-overlay" aria-hidden="true">
+      <div class="modal-card" role="alertdialog" aria-labelledby="task-alert-title">
+        <h3 id="task-alert-title">Es momento de iniciar</h3>
+        <p id="task-alert-text">Tarea pendiente</p>
+        <div class="modal-actions">
+          <button id="task-alert-close-btn" class="modal-btn primary">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="app.js"></script>
   </body>
 </html>
