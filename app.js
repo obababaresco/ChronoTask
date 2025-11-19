@@ -17,6 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const PRE_ALERT_WINDOW_MS = 60 * 1000; // 1 minuto antes del inicio
 
+  const STATUS_OPTIONS = [
+    { value: "en-espera", label: "En Espera" },
+    { value: "en-curso", label: "En Curso" },
+    { value: "realizada", label: "Realizada" },
+    { value: "cancelada", label: "Cancelada" },
+  ];
+
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   let taskPendingDeletion = null;
   let elementPendingDeletion = null;
@@ -181,6 +188,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 `;
       } else {
+        const statusOptionsMarkup = STATUS_OPTIONS.map(
+          ({ value, label }) => `
+                            <option value="${value}" ${
+            task.status === value ? "selected" : ""
+          }>${label}</option>
+                        `
+        ).join("");
+
         li.innerHTML = `
                     <div class="task-info">
                         <span class="task-time">${formatTime12h(
@@ -191,18 +206,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }</span>
                     </div>
                     <div class="task-actions">
-                        <button class="btn-realizada ${
-                          task.status === "realizada" ? "active-status" : ""
-                        }" data-action="realizada">Realizada</button>
-                        <button class="btn-espera ${
-                          task.status === "en-espera" ? "active-status" : ""
-                        }" data-action="espera">En Espera</button>
-                        <button class="btn-curso ${
-                          task.status === "en-curso" ? "active-status" : ""
-                        }" data-action="curso">En Curso</button>
-                        <button class="btn-cancelada ${
-                          task.status === "cancelada" ? "active-status" : ""
-                        }" data-action="cancelada">Cancelada</button>
+                        <select class="task-status-select" aria-label="Actualizar estado de la tarea">
+                            ${statusOptionsMarkup}
+                        </select>
                         <i class="fas fa-pencil-alt icon-action icon-edit" title="Editar Tarea" data-action="edit"></i>
                         <i class="fas fa-trash-alt icon-action icon-delete" title="Borrar Tarea" data-action="delete"></i>
                     </div>
@@ -240,6 +246,28 @@ document.addEventListener("DOMContentLoaded", () => {
     taskStatusInput.value = "en-espera";
   });
 
+  taskList.addEventListener("change", (e) => {
+    const target = e.target;
+    if (!target.classList.contains("task-status-select")) return;
+
+    const li = target.closest(".task-item");
+    const taskId = Number(li.dataset.id);
+    const task = tasks.find((t) => t.id === taskId);
+
+    if (!task) return;
+
+    const newStatus = target.value;
+    task.status = newStatus;
+
+    if (newStatus === "en-espera") {
+      task.alerted = false;
+      task.preAlerted = false;
+    }
+
+    saveTasks();
+    renderTasks();
+  });
+
   taskList.addEventListener("click", (e) => {
     const target = e.target;
     const action = target.dataset.action;
@@ -250,17 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const task = tasks.find((t) => t.id === taskId);
     let shouldRender = true;
 
-    if (["realizada", "espera", "cancelada", "curso"].includes(action)) {
-      if (action === "espera") {
-        task.status = "en-espera";
-        task.alerted = false;
-        task.preAlerted = false;
-      } else if (action === "curso") {
-        task.status = "en-curso";
-      } else {
-        task.status = action;
-      }
-    } else if (action === "delete") {
+    if (action === "delete") {
       showDeleteModal(task, li);
       shouldRender = false; // Evitamos el renderizado inmediato
     } else if (action === "edit") {
