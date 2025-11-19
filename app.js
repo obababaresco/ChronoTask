@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const alertSound = document.getElementById("alert-sound");
   const themeToggleButton = document.getElementById("theme-toggle");
   const body = document.body;
+  const PRE_ALERT_WINDOW_MS = 60 * 1000; // 1 minuto antes del inicio
 
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -38,8 +39,26 @@ document.addEventListener("DOMContentLoaded", () => {
         delete task.dateTime;
         needsSave = true;
       }
+      if (typeof task.alerted === "undefined") {
+        task.alerted = false;
+        needsSave = true;
+      }
+      if (typeof task.preAlerted === "undefined") {
+        task.preAlerted = false;
+        needsSave = true;
+      }
     });
     if (needsSave) saveTasks();
+  };
+
+  const playAlertSound = () => {
+    if (!alertSound) return;
+    try {
+      alertSound.currentTime = 0;
+      alertSound.play();
+    } catch (error) {
+      console.error("No se pudo reproducir la alerta:", error);
+    }
   };
 
   const saveTasks = () => {
@@ -128,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
       time,
       status,
       alerted: false,
+      preAlerted: false,
       isEditing: false,
     };
 
@@ -151,6 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (["realizada", "espera", "cancelada", "curso"].includes(action)) {
       if (action === "espera") {
         task.status = "en-espera";
+        task.alerted = false;
+        task.preAlerted = false;
       } else if (action === "curso") {
         task.status = "en-curso";
       } else {
@@ -178,6 +200,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (newText && newTime) {
         task.text = newText;
         task.time = newTime;
+        task.alerted = false;
+        task.preAlerted = false;
         task.isEditing = false;
       } else {
         alert("El texto y la hora no pueden estar vacíos.");
@@ -192,17 +216,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const checkAlarms = () => {
     const now = new Date();
+    let shouldSave = false;
+
     tasks.forEach((task) => {
-      if (task.status !== "en-espera" || task.alerted || !task.time) return;
+      if (task.status !== "en-espera" || !task.time) return;
+
       const [hours, minutes] = task.time.split(":");
       const taskTimeToday = new Date();
       taskTimeToday.setHours(hours, minutes, 0, 0);
-      if (now >= taskTimeToday) {
-        alertSound.play();
+
+      const diffMs = taskTimeToday.getTime() - now.getTime();
+
+      if (diffMs <= PRE_ALERT_WINDOW_MS && diffMs > 0 && !task.preAlerted) {
+        playAlertSound();
+        task.preAlerted = true;
+        shouldSave = true;
+      }
+
+      if (diffMs <= 0 && !task.alerted) {
+        playAlertSound();
         task.alerted = true;
-        saveTasks();
+        shouldSave = true;
       }
     });
+
+    if (shouldSave) saveTasks();
   };
 
   // --- INICIALIZACIÓN ---
